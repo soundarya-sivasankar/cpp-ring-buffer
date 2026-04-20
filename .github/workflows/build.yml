@@ -1,0 +1,57 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# GitHub Actions CI Workflow
+# File location: .github/workflows/build.yml
+#
+# What this does:
+#   Every time you push code (or open a pull request), GitHub automatically
+#   spins up a Linux machine, checks out your code, builds it, and runs tests.
+#   If tests fail, the workflow turns red. If they pass, it turns green.
+#   You get a status badge on your README.
+#
+# This costs you nothing — GitHub Actions is free for public repositories.
+# ─────────────────────────────────────────────────────────────────────────────
+
+name: Build and Test
+
+# When to run this workflow
+on:
+  push:           # Every push to any branch
+  pull_request:   # Every pull request
+
+jobs:
+  build:
+    name: Build & Test
+    runs-on: ubuntu-latest    # Free GitHub-hosted Ubuntu Linux machine
+
+    steps:
+
+      # Step 1: Download your repository code onto the runner machine
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # Step 2: Make sure build tools are available
+      # ubuntu-latest already has cmake and g++, but this ensures they're current
+      - name: Install build tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y cmake build-essential
+
+      # Step 3: Configure the build
+      # -S .          = source directory is current folder (where CMakeLists.txt is)
+      # -B build      = put all generated build files in ./build (keeps things tidy)
+      # -DCMAKE_BUILD_TYPE=Debug = include debug symbols, enable assertions
+      - name: Configure with CMake
+        run: cmake -S . -B build -DCMAKE_BUILD_TYPE=Debug
+
+      # Step 4: Compile everything
+      # --build build  = build the project in the ./build directory
+      # --parallel     = use all available CPU cores (faster)
+      - name: Build
+        run: cmake --build build --parallel
+
+      # Step 5: Run all tests
+      # --test-dir build          = find tests in the ./build directory
+      # --output-on-failure       = only print test output if something fails
+      # -V                        = verbose: show each test name as it runs
+      - name: Run Tests
+        run: ctest --test-dir build --output-on-failure -V
