@@ -1,6 +1,6 @@
 # Thread-Safe Ring Buffer in C++17
 
-![Build and Test](https://github.com/YOUR_USERNAME/cpp-ring-buffer/actions/workflows/build.yml/badge.svg)
+![Build and Test](https://github.com/soundarya-sivasankar/cpp-ring-buffer/actions/workflows/build.yml/badge.svg)
 
 A fixed-size, thread-safe circular (ring) buffer implemented in modern C++17.
 
